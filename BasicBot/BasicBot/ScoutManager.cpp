@@ -420,4 +420,5 @@ BWTA::BaseLocation * ScoutManager::getScoutTargetBaseLocation()
 std::vector<BWAPI::Position> & ScoutManager::getEnemyRegionVertices()
 {
 	return enemyBaseRegionVertices;
+	//commit confirm
 }
