@@ -1,4 +1,4 @@
-﻿#include "ScoutManager.h"
+#include "ScoutManager.h"
 #include "BuildManager.h"
 #include "MapTools.h"
 
@@ -38,8 +38,11 @@ void ScoutManager::assignScoutIfNeeded()
 {
 	BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
 
+	// 적 진영을 모르면
 	if (enemyBaseLocation == nullptr)
 	{
+		//
+		/*
 		if (!currentScoutUnit || currentScoutUnit->exists() == false || currentScoutUnit->getHitPoints() <= 0)
 		{
 			currentScoutUnit = nullptr;
@@ -56,27 +59,59 @@ void ScoutManager::assignScoutIfNeeded()
 					break;
 				}
 			}
+			//if (firstBuilding)
+			//{
 
-			if (firstBuilding)
+			*/
+		bool isScout = false;
+		for (auto & unit : WorkerManager::Instance().workerData.getWorkers())
+		{				
+			if (WorkerManager::Instance().getWorkerData().getWorkerJob(unit) == 7)
+				isScout = true;
+		}
+		if (isScout == false)
+		{
+			int mineral_count_flag = 0;
+			for (auto & unit : WorkerManager::Instance().workerData.getWorkers())
 			{
-				// grab the closest worker to the first building to send to scout
-				BWAPI::Unit unit = WorkerManager::Instance().getClosestMineralWorkerTo(firstBuilding->getPosition());
-
-				// if we find a worker (which we should) add it to the scout units
-				// 정찰 나갈 일꾼이 없으면, 아무것도 하지 않는다
-				if (unit)
+				if (WorkerManager::Instance().getWorkerData().getWorkerJob(unit) == 0)
+					mineral_count_flag++;
+			}
+			if (mineral_count_flag % 9 == 0)
+			{
+				for (auto & unit : WorkerManager::Instance().workerData.getWorkers())
 				{
-					// set unit as scout unit
-					currentScoutUnit = unit;
+					if (unit->isGatheringMinerals())
+						currentScoutUnit = unit;
 					WorkerManager::Instance().setScoutWorker(currentScoutUnit);
-
-					// 참고로, 일꾼의 정찰 임무를 해제하려면, 다음과 같이 하면 된다
-					//WorkerManager::Instance().setIdleWorker(currentScoutUnit);
+					break;
 				}
 			}
 		}
 	}
+	//}
+	/*
+	if (firstBuilding)
+	{
+	// grab the closest worker to the first building to send to scout
+	BWAPI::Unit unit = WorkerManager::Instance().getClosestMineralWorkerTo(firstBuilding->getPosition());
+
+	// if we find a worker (which we should) add it to the scout units
+	// 정찰 나갈 일꾼이 없으면, 아무것도 하지 않는다
+	if (unit)
+	{
+	// set unit as scout unit
+	currentScoutUnit = unit;
+	WorkerManager::Instance().setScoutWorker(currentScoutUnit);
+
+	// 참고로, 일꾼의 정찰 임무를 해제하려면, 다음과 같이 하면 된다
+	//WorkerManager::Instance().setIdleWorker(currentScoutUnit);
+	}
+	}*/
+
+
 }
+				
 
 
 // 상대방 MainBaseLocation 위치를 모르는 상황이면, StartLocation 들에 대해 아군의 MainBaseLocation에서 가까운 것부터 순서대로 정찰
